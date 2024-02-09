@@ -43,6 +43,7 @@ class index extends PageAbstract {
             }
             var defaultValue = this.data[key] ?? "";
             var typeImput = "default";
+            let extra: any = {};
             switch (col["type"]) {
                 case "text":
                     typeImput = "text"
@@ -56,7 +57,7 @@ class index extends PageAbstract {
                 case "double":
                     typeImput = "text"
                     // if (defaultValue) {
-                        // defaultValue = parseFloat(defaultValue).toFixed(2)
+                    // defaultValue = parseFloat(defaultValue).toFixed(2)
                     // }
                     break;
                 case "money":
@@ -65,9 +66,19 @@ class index extends PageAbstract {
                         defaultValue = parseFloat(defaultValue).toFixed(2)
                     }
                     break;
+                case "boolean":
+                    typeImput = "select"
+                    // extra.options = [{ key: "", content: "SELECCIONAR" }, { key: "true", content: "SI" }, { key: "false", content: "NO" }]
+                    extra.options = [{ key: "true", content: "SI" }, { key: "false", content: "NO" }]
+                    // extra.defaultValue = "false";
+                    if (defaultValue) {
+                        defaultValue = JSON.parse(defaultValue) == true ? "true" : "false"
+                        // defaultValue = parseFloat(defaultValue).toFixed(2)
+                    }
+                    break;
 
             }
-            headers[key] = { label: label, required: col["notNull"], type: typeImput, defaultValue: defaultValue }
+            headers[key] = { label: label, required: col["notNull"], type: typeImput, defaultValue: defaultValue, ...extra }
         })
         return headers;
     }

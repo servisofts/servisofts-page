@@ -89,8 +89,9 @@ class profile extends PageAbstract {
             this.state.loadingSuccess = true;
             this.setState({ ...this.state })
         }
-        return <SView col={"xs-12"} center>
-            {this.$item(this.data)}
+        return <SView col={"xs-12"} center style={{
+        }}>
+                {this.$item(this.data)}
         </SView>
     }
 }

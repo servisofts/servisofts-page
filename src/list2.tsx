@@ -1,7 +1,7 @@
 import React from 'react'
 import PageAbstract, { PageAbstractConfigType } from './PageAbstract';
 
-import { SButtom, SHr, SImage, SList, SList2, SLoad, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import { SButtom, SHr, SImage, SList, SList2, SLoad, SNavigation, SPage, SPopup, SText, STheme, SThread, SView } from 'servisofts-component';
 import Item from './item';
 import Enviroment from './Enviroment';
 import { MenuItemPropsType } from './type';
@@ -10,14 +10,17 @@ interface listConfigType extends PageAbstractConfigType {
 
 }
 
-class list extends PageAbstract {
+class list2 extends PageAbstract {
     onSelect
     constructor(props, config: listConfigType) {
         super(props, {
             type: "pageContainer",
             ...config,
-        }, "list");
+        }, "list2");
         this.onSelect = SNavigation.getParam("onSelect");
+        new SThread(50, "_ready_to_view", false).start(() => {
+            this.setState({ _ready_to_view: true })
+        })
     }
 
 
@@ -76,9 +79,11 @@ class list extends PageAbstract {
 
 
     $render() {
+        if (!this.state._ready_to_view) return <SLoad/>
         var data = this.$getData();
+
         if (!data) return this.$onLoading()
-        return (<SList2
+        return (<SList
             buscador
             order={this.$order()}
             limit={10}
@@ -88,4 +93,4 @@ class list extends PageAbstract {
         />)
     }
 }
-export default list;
+export default list2;

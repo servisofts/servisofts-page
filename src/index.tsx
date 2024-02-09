@@ -1,6 +1,7 @@
 import { connect as r_connect } from 'react-redux';
 
 import list from "./list"
+import list2 from "./list2"
 import table from "./table"
 import _new from "./new"
 import _delete from "./delete"
@@ -13,6 +14,7 @@ import restore from "./restore";
 
 export default {
     list,
+    list2,
     table,
     edit,
     profile,

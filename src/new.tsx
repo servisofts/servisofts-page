@@ -17,7 +17,6 @@ class index extends PageAbstract {
             ...config,
         }, "new");
         this._params = SNavigation.getAllParams();
-        console.log(this._params)
     }
 
 
@@ -39,6 +38,7 @@ class index extends PageAbstract {
                 label = col.label ?? key;
             }
             var typeImput = "";
+            let extra: any = {};
             switch (col["type"]) {
                 case "text":
                     typeImput = "text"
@@ -49,9 +49,18 @@ class index extends PageAbstract {
                 case "integer":
                     typeImput = "number"
                     break;
+                case "boolean":
+                    typeImput = "select"
+                    extra.options = [{ key: "true", content: "SI" }, { key: "false", content: "NO" }]
+                    extra.defaultValue = "false";
+                    // if (defaultValue) {
+                    //     defaultValue = JSON.parse(defaultValue) == true ? "true" : "false"
+                    //     // defaultValue = parseFloat(defaultValue).toFixed(2)
+                    // }
+                    break;
             }
 
-            headers[key] = { label: label, required: col["notNull"], type: typeImput }
+            headers[key] = { label: label, required: col["notNull"], type: typeImput, ...extra }
             if (this._params[key]) {
                 headers[key].defaultValue = this._params[key];
                 headers[key].editable = false;

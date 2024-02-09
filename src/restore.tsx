@@ -1,6 +1,6 @@
 import React from 'react'
-import PageAbstract, { PageAbstractConfigType } from './PageAbstract';
 import { SButtom, SHr, SList, SLoad, SNavigation, SPage, SPopup, SText, STheme, SView } from 'servisofts-component';
+import PageAbstract, { PageAbstractConfigType } from './PageAbstract';
 import Enviroment from './Enviroment';
 interface deleteConfigType extends PageAbstractConfigType {
 

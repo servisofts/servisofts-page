@@ -35,3 +35,8 @@ declare module 'servisofts-socket' {
 declare module 'react-redux' {
     export { connect } from 'react-redux';
 }
+
+
+// declare module 'servisofts-component' {
+//     export { SButtom, SHr, SImage, SList, SLoad, SNavigation, SScrollView3, SScrollView2, SPage, SPopup, SText, STheme, SView, STable2, SDate, HeaderProps, SIcon, SInput, SForm } from 'servisofts-component';
+// }

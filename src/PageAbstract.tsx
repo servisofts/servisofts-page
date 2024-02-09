@@ -1,8 +1,9 @@
 import React from 'react'
-import { SNavigation, SLoad, SPopup, SPage, SView, SHr, SText } from 'servisofts-component';
+import { SNavigation, SLoad, SPopup, SPage, SView, SHr, SText, SThread } from 'servisofts-component';
 import DPAContainer from './components/DPAContainer';
 import DPAMenu from './components/DPAMenu';
 import Enviroment from './Enviroment';
+import { DPAMenuType, MenuItemPropsType } from './type';
 
 
 export type ParentType = {
@@ -17,10 +18,12 @@ export type PageAbstractConfigType = {
     item?: any,
     limit?: number,
     itemType?: "default" | "1" | "2",
+    menuType?: DPAMenuType,
     excludes?: String[],
     params?: String[]
     defaultParams?: any;
-    type?: "page" | "pageContainer" | "component" | "componentTitle" | "container"
+    type?: "page" | "pageContainer" | "component" | "componentTitle" | "container",
+    onRefresh?: (resolve: Function) => any
 
 }
 
@@ -28,10 +31,12 @@ abstract class PageAbstract extends React.Component {
     title; Parent; excludes; item; params; defaultParams; isPage; type; itemType;
     $params; limit;
     state;
+    config: PageAbstractConfigType;
 
     constructor(props, config: PageAbstractConfigType, pageType: String) {
         super(props);
         this.state = {}
+        this.config = config;
         const { title, Parent, excludes, item, params, defaultParams, type, itemType, limit } = config;
         this.type = type ?? "component"
         this.title = title;
@@ -40,7 +45,14 @@ abstract class PageAbstract extends React.Component {
                 this.title = `${Enviroment.pages[pageType + ""] ?? pageType} ${Parent?.name}`;
             }
         }
+
         this.itemType = itemType;
+        if (type == "page" || type == "pageContainer") {
+            new SThread(50, "_ready_to_view", false).start(() => {
+                this.setState({ _ready_to_view: true })
+            })
+        }
+
         this.limit = limit;
         this.Parent = Parent ?? props.Parent;
         this.excludes = excludes ?? props.excludes ?? [];
@@ -78,15 +90,15 @@ abstract class PageAbstract extends React.Component {
         this.$params = parameters;
         return valid;
     }
+    // $onRefresh: (resolve) => any = null
 
     abstract $render();
 
     $header() {
         return null;
     }
-    $menu() {
-        var arr = [];
-
+    $menu(): MenuItemPropsType[] {
+        var arr: MenuItemPropsType[] = [];
         return arr;
     }
     $footer() {
@@ -110,34 +122,45 @@ abstract class PageAbstract extends React.Component {
             SNavigation.goBack();
             return null;
         }
+
+
         switch (this.type) {
             case "page":
-                return <SPage title={this.title} disableScroll>
+                // if (!this.state._ready_to_view) return <SView col={"xs-12"} height center><SLoad /></SView>
+                return <SPage title={this.title} disableScroll onRefresh={this.config.onRefresh} header={<>
                     {this.$header()}
-                    <DPAMenu data={this.$menu()} />
-                    {this.$render()}
-                    {this.$footer()}
-                </SPage>
-            case "pageContainer":
-                return <SPage title={this.title} >
-                    <DPAContainer>
-                        {this.$header()}
-                        <DPAMenu data={this.$menu()} />
+                    <DPAMenu data={this.$menu()} type={this.config.menuType} />
+                </>}>
+                    {(!this.state._ready_to_view) ? <SLoad /> : <>
                         {this.$render()}
                         {this.$footer()}
-                    </DPAContainer>
+                    </>}
                 </SPage>
-            case "container":
-                return <DPAContainer>
+            case "pageContainer":
+                // if (!this.state._ready_to_view) return <SView col={"xs-12"} height center><SLoad /></SView>
+                return <SPage title={this.title} onRefresh={this.config.onRefresh} header={<DPAContainer>
                     {this.$header()}
-                    <DPAMenu data={this.$menu()} />
+                    <DPAMenu data={this.$menu()} type={this.config.menuType} />
+                </DPAContainer>
+                }>
+                    {(!this.state._ready_to_view) ? <SLoad /> : <DPAContainer >
+                        {this.$render()}
+                        {this.$footer()}
+                    </DPAContainer>}
+                    <SHr height={100} />
+                </SPage >
+            case "container":
+                return <DPAContainer >
+                    {this.$header()}
+                    <DPAMenu data={this.$menu()} type={this.config.menuType} />
                     {this.$render()}
                     {this.$footer()}
+                    <SHr height={100} />
                 </DPAContainer>
             case "component":
                 return <SView col={"xs-12"}>
                     {this.$header()}
-                    <DPAMenu data={this.$menu()} />
+                    <DPAMenu data={this.$menu()} type={this.config.menuType} />
                     {this.$render()}
                     {this.$footer()}
                 </SView>
@@ -147,7 +170,7 @@ abstract class PageAbstract extends React.Component {
                     <SText bold fontSize={16}>{this.title}</SText>
                     <SHr />
                     {this.$header()}
-                    <DPAMenu data={this.$menu()} />
+                    <DPAMenu data={this.$menu()} type={this.config.menuType} />
                     {this.$render()}
                     {this.$footer()}
                 </SView>

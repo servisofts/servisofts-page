@@ -1,24 +1,30 @@
 import React from 'react'
+import { Text } from 'react-native'
 import { SDate, SHr, SImage, SList, SLoad, SText, STheme, SView } from 'servisofts-component';
 import SSocket from 'servisofts-socket'
 import PageAbstract, { PageAbstractConfigType } from './PageAbstract';
 
 interface itemConfigType extends PageAbstractConfigType {
-    row?: boolean
+    row?: boolean,
+    padding?: any
 }
 
 class item extends PageAbstract {
     row;
     props;
+    padding;
     // props:{ header:(this)=>any, footer:(this)=>any};
     data;
     constructor(props, config: itemConfigType) {
-
         super(props, {
             ...config,
             type: config.type ?? "component"
         }, "item");
         this.row = config.row ?? props.row;
+        this.padding = 4;
+        if (config.padding !== null && config.padding !== undefined) {
+            this.padding = config.padding
+        }
     }
     $getData() {
         return this.props.data;
@@ -33,7 +39,7 @@ class item extends PageAbstract {
                 imageSize = { w: 40, h: 40 }
                 break;
         }
-        return <SView center row>
+        return <SView center row width={imageSize.w}>
             <SView width={8} />
             <SView width={imageSize.w} height={imageSize.h} card style={{
                 overflow: 'hidden',
@@ -64,20 +70,29 @@ class item extends PageAbstract {
                     <SHr />
                     <SText color={STheme.color.gray} fontSize={14} >{`${label}: `} </SText>
                     <SHr height={4} />
-                    <SText flex fontSize={14}>{value}</SText>
+                    <SView flex>
+                        <SText col={"xs-12"} fontSize={14}>{value}</SText>
+                    </SView>
+
                 </SView>
             default:
-                return <SView col={"xs-12"} row style={{
-                    alignItems: 'center',
-                    padding: 4
-                }}>
-
-                    {/* <SText color={STheme.color.gray} fontSize={12} >{`${label}: `} </SText> */}
-                    <SText flex fontSize={14}>
-                        <SText color={STheme.color.gray} fontSize={12} >{`${label}: `} </SText>
-                        {value}
-                    </SText>
-                </SView>
+                return <SView col={"xs-12"} style={{
+                }} >
+                    <SView col={"xs-12"} style={{
+                        // alignItems: 'center',
+                        padding: 4,
+                        // overflow: 'hidden',
+                    }}>
+                        {/* <Text>{label}<Text>{value}</Text></Text> */}
+                        {/* <SText color={STheme.color.gray} fontSize={12} >{`${label}: `} </SText> */}
+                        <SText col={"xs-12"} fontSize={14} style={{
+                            maxWidth: "100%",
+                        }}>
+                            <SText color={STheme.color.gray} fontSize={12} >{`${label}: `} </SText>
+                            {value}
+                        </SText>
+                    </SView>
+                </SView >
         }
 
     }
@@ -96,7 +111,7 @@ class item extends PageAbstract {
                         value = new SDate(value).toString('yyyy-MM-dd hh:mm')
                     }
                     if (col.type == "boolean") {
-                        value = value ? "SI" : "NO"
+                        value = JSON.parse(value)==true ? "SI" : "NO"
                     }
                     if (col.type == "json") {
                         value = JSON.stringify(value);
@@ -109,10 +124,12 @@ class item extends PageAbstract {
         this.data = this.$getData();
         if (!this.data) return this.$onLoading();
         return <SView col={"xs-12"} row={this.row} center={!this.row} >
-
+            {!this.row ? null : <SView width={this.padding} />}
             {this.loadImage(this.data[this.Parent.model.pk])}
-            {!this.row ? <SHr /> : null}
-            <SView flex center>
+            {!this.row ? <SHr height={this.padding} /> : <SView width={this.padding} />}
+            <SView flex center col={this.props?.col} style={{
+                maxWidth: "100%",
+            }} >
                 {this.props?.header ? this.props.header(this) : null}
                 {this.$renderContent()}
                 {this.props?.footer ? this.props.footer(this) : null}
@@ -122,7 +139,7 @@ class item extends PageAbstract {
 
     $render() {
         return (<SView card col={"xs-12"} style={{
-            padding: 8
+            padding: this.padding,
         }} onPress={this.props.onPress}>
             {this.renderContent()}
         </SView>);
