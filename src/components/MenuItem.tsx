@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import { SIcon, SText, STheme, SView } from 'servisofts-component';
 import { MenuItemPropsType } from '../type';
 
+const VView: any = View;
 class MenuItem extends Component<MenuItemPropsType> {
     props: MenuItemPropsType;
     constructor(props) {
@@ -41,7 +42,7 @@ class MenuItem extends Component<MenuItemPropsType> {
                 paddingStart: 4,
                 paddingEnd: 4,
             }} onPress={this.props.onPress} center >
-                <View style={{
+                <VView style={{
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
@@ -49,12 +50,12 @@ class MenuItem extends Component<MenuItemPropsType> {
                 }}>
                     {/* <SView width={4} /> */}
                     {/* <SView width={15} center style={{
-                        paddingStart: 8
-                    }}> */}
+                paddingStart: 8
+            }}> */}
                     {this.getIcon()}
                     {/* </SView> */}
                     {this.renderContent()}
-                </View>
+                </VView>
             </SView>
         );
     }
